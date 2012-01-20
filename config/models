@@ -1,0 +1,16 @@
+User
+    ident Text
+    password Text Maybe
+    UniqueUser ident
+Email
+    email Text
+    user UserId Maybe
+    verkey Text Maybe
+    UniqueEmail email
+Item
+	id Int
+	word Text
+	pronunciation Text Maybe
+	translation Text
+
+ -- By default this file is used in Model.hs (which is imported by Foundation.hs)
