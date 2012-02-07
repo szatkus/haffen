@@ -1,0 +1,95 @@
+<title>halo</title>
+<script src="mootools.js"></script>
+<script src="init.js"></script>
+<script>
+	Haffen.connect = function(url, data, callback) {
+		var request = new Request.JSON({url: url, data: data, onSuccess: callback});
+		request.send();
+	};
+	Haffen.addHandler = function(handlerName, url, callback) {
+		Haffen.handlers[handlerName] = function(data) {
+			Haffen.connect(url, data, callback);
+		}
+	}
+	Haffen.addHandler('items', 'find', function(items) {
+		var itemsTable = $('items').getElement('table tbody');
+		itemsTable.empty();
+		items.each(function(item) {
+			var row = new Element('tr');
+			for (prop in item) {
+				var cell = new Element('td', {html: item[prop]})
+				cell.inject(row);
+			}
+			row.inject(itemsTable);
+		});
+	});
+	Haffen.addHandler('learn', 'next', function(item) {
+		var single = $('learn').getElement('input');
+		var multiple = $('learn').getElement('select');
+		single.addClass('hide');
+		multiple.addClass('hide');
+		var question = $('learn').getElement('h1');
+		question.set('html', item.question);
+		var singleMode = (item.options.length == 0);
+		if (singleMode) {
+			single.removeClass('hide');
+		} else {
+			multiple.removeClass('hide');
+		}
+		var form = $('learn').getElement('form');
+		form.removeEvents();
+		form.removeClass('hide');
+		form.addEvent('submit', function() {
+			if (singleMode) {
+				var answer = single.get('value');
+			} else {
+			}
+			var data = 'id=' + item.id + '&answer=' + answer;
+			Haffen.goto('result', data);
+			return(false);
+		});
+	});
+	
+	Haffen.addHandler('result', 'check', function(response) {
+		var question = $('result').getElement('h1');
+		question.set('html', response.question);
+		var result = $('result').getElement('h2');
+		if (response.result == 'ok') {
+			
+		} else {
+		}
+		result.set('html', response.answer);
+	});
+</script>
+<style>
+	.hide {
+		display: none;
+	}
+</style>
+<div id="main" class="page">Hello!<a href="#items">Items</a></div>
+<div id="items" class="page">
+	Oooo!
+	<table>
+		<thead>
+			<tr>
+				<td>Word</td>
+				<td>Pronunciation</td>
+				<td>Translation</td>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+</div>
+<div id="learn" class="page">
+	<h1></h1>
+	<form>
+		<input>
+		<select multiple></select>
+	</form>
+</div>
+<div id="result" class="page">
+	<h1></h1>
+	<h2></h2>
+	<a href="#learn">Next</a>
+</div>
